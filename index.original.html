@@ -1,0 +1,360 @@
+<html>
+
+<head>
+<title>LP are da best !</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript" src="gl-matrix-min.js"></script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aVertexColor;
+    attribute vec2 aTexCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec4 vColor;
+    varying vec2 vTex;
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
+        vTex = aTexCoord;
+    }
+</script>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+    varying vec4 vColor;
+    varying vec2 vTex;
+    uniform sampler2D sampler;
+
+    void main(void) {
+
+        //vec2 pos =  gl_FragCoord.xy / vec2(500.,500.);
+        vec2 pos = vTex;
+        float l = length(pos*2.-1.);
+        //grille
+        /*if(mod(gl_FragCoord.y, 50.) < 3.|| mod(gl_FragCoord.x, 50.) < 3.) {
+              discard;
+        }*/
+
+        //cercle
+        /*
+        if(mod(l, 0.15)<0.05) {
+            discard;
+        }*/
+        gl_FragColor = texture2D(sampler, vTex);
+    }
+</script>
+
+<script type="text/javascript">
+
+    var gl;
+
+    function initGL(canvas) {
+        try {
+            gl = canvas.getContext("experimental-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            alert("Could not initialise WebGL, sorry :-(");
+        }
+    }
+
+
+    function getShader(gl, id) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+
+        var str = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                str += k.textContent;
+            }
+            k = k.nextSibling;
+        }
+
+        var shader;
+        if (shaderScript.type == "x-shader/x-fragment") {
+            shader = gl.createShader(gl.FRAGMENT_SHADER);
+        } else if (shaderScript.type == "x-shader/x-vertex") {
+            shader = gl.createShader(gl.VERTEX_SHADER);
+        } else {
+            return null;
+        }
+
+        gl.shaderSource(shader, str);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+
+
+    var shaderProgram;
+
+    function initShaders() {
+        var fragmentShader = getShader(gl, "shader-fs");
+        var vertexShader = getShader(gl, "shader-vs");
+
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+
+        gl.useProgram(shaderProgram);
+
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+        shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+        shaderProgram.vertexTexAttribute = gl.getAttribLocation(shaderProgram, "aTexCoord");
+        gl.enableVertexAttribArray(shaderProgram.vertexTexAttribute);
+
+        shaderProgram.timeUniform = gl.getUniformLocation(shaderProgram, 'time');
+        shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    }
+
+    function initTextures() {
+        carreTexture = gl.createTexture();
+        carreImage = new Image();
+        carreImage.onload = function() {
+            handleTextureLoaded(carreImage, carreTexture);
+        }
+        carreImage.src = "sunmap.jpg";
+
+    }
+
+    function handleTextureLoaded(image, texture) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+    var mvMatrix = mat4.create();
+    var pMatrix = mat4.create();
+
+    function setMatrixUniforms(shader) {
+        gl.uniformMatrix4fv(shader.pMatrixUniform, false, pMatrix);
+        gl.uniformMatrix4fv(shader.mvMatrixUniform, false, mvMatrix);
+    }
+
+    var triangleBuffer;
+    var colorBuffer;
+    var cubePosBuffer;
+    var cubeColorsBuffer;
+    var indiceCubeBuffer;
+    var carreColorsBuffer;
+    var carreBuffer;
+    var carreIndiceBuffer;
+    var squareTexBuffer;
+
+    function initBuffers() {
+        /*
+        //Position du traingle
+        var triangle = [0,0,
+        2,0,
+        1,1];
+        triangleBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,triangleBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangle), gl.STATIC_DRAW);
+
+        //couleurs
+        var colors = [1,0,0,0,1,0,0,0,1];
+        colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+        //Cube
+        var cube = [
+            0,0,0,
+            1,0,0,
+            1,1,0,
+            0,1,0,
+            1,0,-1,
+            0,0,-1,
+            0,1,-1,
+            1,1,-1
+        ];
+
+        cubePosBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubePosBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
+
+        //Couleurs du cube
+        var cubeColors = [
+            1,1,1,
+            1,1,1,
+            1,1,1,
+            1,1,1,
+            0.5,0.5,0.5,
+            0.5,0.5,0.5,
+            0.5,0.5,0.5,
+            0.5,0.5,0.5
+        ];
+
+        cubeColorsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeColors), gl.STATIC_DRAW);
+
+        //indices du cube
+        cubeIndices = [
+            0,1,2,0,2,3,
+            4,5,6,4,6,7,
+            1,4,7,1,7,2,
+            5,0,3,5,3,6,
+            3,2,7,3,7,6,
+            5,0,1,5,1,4
+        ];
+        indiceCubeBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indiceCubeBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices),gl.STATIC_DRAW);
+        */
+
+        //Carré
+        carre = [
+            0,0,0,
+            2,0,0,
+            2,2,0,
+            0,2,0
+        ];
+
+        carreBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, carreBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(carre), gl.STATIC_DRAW);
+
+        //Couleurs du carré
+        var carreColors = [
+            0,0.5,0.5,
+            0,0.5,0.5,
+            0,0.5,0.5,
+            0,0.5,0.5
+        ];
+
+        carreColorsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, carreColorsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(carreColors), gl.STATIC_DRAW);
+
+        carreIndice = [0,1,2,0,2,3];
+        carreIndiceBuffer= gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, carreIndiceBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(carreIndice), gl.STATIC_DRAW);
+
+        squareTexBuffer = gl.createBuffer();
+        var tex =[0,1,1,1,1,0,0,0];// [0,0,1,0,1,1,0,1];
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
+    }
+
+    var angle = 0;
+    var time = 0;
+    var zoom = 45;
+
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        mat4.identity(pMatrix);
+        mat4.identity(mvMatrix);
+        mat4.perspective(pMatrix, zoom*3.141592/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
+
+        //mat4.translate(mvMatrix, mvMatrix ,[0,0,-2]);
+        mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
+        mat4.translate(mvMatrix, mvMatrix ,[-1,-1,-2]);
+
+        /*
+
+        gl.bindBuffer(gl.ARRAY_BUFFER,triangleBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,2,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);
+
+        //Cube
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubePosBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER,cubeColorsBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);
+
+        */
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, carreBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, carreColorsBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+        
+        setMatrixUniforms(shaderProgram);
+        gl.uniform1f(shaderProgram.timeUniform, time);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, carreTexture);
+        gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
+
+        gl.drawElements(gl.TRIANGLES,6, gl.UNSIGNED_SHORT,0);
+        //gl.drawArrays(gl.TRIANGLES,0,3);
+
+        angle += 0.02;
+        time += 0.01;
+
+        setTimeout(drawScene, 1000/60);
+    }
+
+    function mouseZoom(event) {
+        zoom += Math.sign(event.detail);
+    }
+
+    function webGLStart() {
+        var canvas = document.getElementById("dawin-canvas");
+        initGL(canvas);
+        initShaders();
+        initBuffers();
+        initTextures();
+
+        canvas.addEventListener("DOMMouseScroll", mouseZoom, false);
+
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.enable(gl.DEPTH_TEST);
+
+        drawScene();
+    }
+
+</script>
+
+
+</head>
+
+
+<body onload="webGLStart();" style="text-align: center;">
+
+    <canvas id="dawin-canvas" style="border: none;" width="500" height="500"></canvas>
+
+</body>
+
+</html>
