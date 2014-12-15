@@ -13,26 +13,27 @@
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
 
-    varying vec2 vTex;
+    varying vec3 vTex;
 
     void main(void) {
         vec3 norm = normalize(aVertexPosition);
         gl_Position = uPMatrix * uMVMatrix * vec4(norm, 1.0);
-        vTex = aTexCoord;
+        vTex = norm;
     }
 </script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
     //varying vec4 vColor;
-    varying vec2 vTex;
+    varying vec3 vTex;
     uniform sampler2D sampler;
 
     void main(void) {
-        vec2 pos = vTex;
+        vec3 pos = vTex*2.0 - 1.0;
+        vec2 texCoord = vec2(1.0-(atan(vTex.z, vTex.x) / 3.14159 + 1.0) * 0.5,1.0-(asin(vTex.y) / 3.14159 + 0.5)); 
         float l = length(pos*2.-1.);
 
-        gl_FragColor = texture2D(sampler, vTex);
+        gl_FragColor = texture2D(sampler, texCoord);
     }
 </script>
 
@@ -146,6 +147,7 @@
     }
 
     var cubeBuffer;
+    //var earthBuffer;
     var squareTexBuffer;
 
     function initBuffers() {
@@ -237,9 +239,14 @@
             
         }
 
+        //Soleil
         cubeBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
+
+        /*earthBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);*/
 
         squareTexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
