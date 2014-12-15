@@ -118,12 +118,12 @@
     }
 
     function initTextures() {
-        carreTexture = gl.createTexture();
-        carreImage = new Image();
-        carreImage.onload = function() {
-            handleTextureLoaded(carreImage, carreTexture);
+        cubeTexture = gl.createTexture();
+        cubeImage = new Image();
+        cubeImage.onload = function() {
+            handleTextureLoaded(cubeImage, cubeTexture);
         }
-        carreImage.src = "sunmap.jpg";
+        cubeImage.src = "sunmap.jpg";
 
     }
 
@@ -145,26 +145,18 @@
         gl.uniformMatrix4fv(shader.mvMatrixUniform, false, mvMatrix);
     }
 
-    var triangleBuffer;
-    var colorBuffer;
-    var cubePosBuffer;
-    var cubeColorsBuffer;
-    var indiceCubeBuffer;
-    var carreColorsBuffer;
-    var carreBuffer;
-    var carreIndiceBuffer;
+    var cubeBuffer;
     var squareTexBuffer;
 
     function initBuffers() {
-        //Carré
-
+        //Cube
         var avant = [];
         var arriere = [];
         var droite = [];
         var gauche = [];
         var haut = [];
         var bas = [];
-        var carre = [];
+        var cube = [];
         var tex =[];
 
         for(var x=-5; x<5; x++) {
@@ -235,27 +227,21 @@
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                carre = carre.concat(avant);
-                carre = carre.concat(arriere);
-                carre = carre.concat(droite);
-                carre = carre.concat(gauche);
-                carre = carre.concat(haut);
-                carre = carre.concat(bas);
+                cube = cube.concat(avant);
+                cube = cube.concat(arriere);
+                cube = cube.concat(droite);
+                cube = cube.concat(gauche);
+                cube = cube.concat(haut);
+                cube = cube.concat(bas);
             }
             
         }
 
-        carreBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, carreBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(carre), gl.STATIC_DRAW);
-
-        carreIndice = [0,1,2,0,2,3];
-        carreIndiceBuffer= gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, carreIndiceBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(carreIndice), gl.STATIC_DRAW);
+        cubeBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
 
         squareTexBuffer = gl.createBuffer();
-        // [0,0,1,0,1,1,0,1];
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
     }
@@ -278,10 +264,10 @@
         mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
 
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, carreBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
 
-        /*gl.bindBuffer(gl.ARRAY_BUFFER, carreColorsBuffer);
+        /*gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorsBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);*/
 
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
@@ -290,7 +276,7 @@
         setMatrixUniforms(shaderProgram);
         gl.uniform1f(shaderProgram.timeUniform, time);
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, carreTexture);
+        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
         gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
 
         gl.drawArrays(gl.TRIANGLES,0,3600);
