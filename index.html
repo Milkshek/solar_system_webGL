@@ -285,12 +285,43 @@
         //Soleil
         gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
         mat4.translate(mvMatrix, mvMatrix ,[0,0,-20]);
+
         //Cube de soleil
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
         //Texture du soleil
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Mercure
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Venus
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
@@ -305,11 +336,85 @@
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
         mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
 
+        //Mars
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Jupiter
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Saturne
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Uranus
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Neptune
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
 
         //Gestion du temps
         gl.uniform1f(shaderProgram.timeUniform, time);
@@ -361,7 +466,7 @@
 
 <body onload="webGLStart();" style="text-align: center;">
 
-    <canvas id="dawin-canvas" style="border: none;" width="800" height="800"></canvas>
+    <canvas id="dawin-canvas" style="border: none;" width="1024" height="600"></canvas>
 
 </body>
 
