@@ -16,7 +16,8 @@
     varying vec2 vTex;
 
     void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vec3 norm = normalize(aVertexPosition);
+        gl_Position = uPMatrix * uMVMatrix * vec4(norm, 1.0);
         vTex = aTexCoord;
     }
 </script>
@@ -30,6 +31,7 @@
     void main(void) {
         vec2 pos = vTex;
         float l = length(pos*2.-1.);
+
         gl_FragColor = texture2D(sampler, vTex);
     }
 </script>
