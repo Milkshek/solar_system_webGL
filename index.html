@@ -263,6 +263,15 @@
     }
 
     var angle = 0;
+    var angle1 = 0;
+    var angle2 = 0;
+    var angle3 = 0;
+    var angle4 = 0;
+    var angle5 = 0;
+    var angle6 = 0;
+    var angle7 = 0;
+    var angle8 = 0;
+
     var time = 0;
     var zoom = 45;
 
@@ -272,7 +281,7 @@
 
         mat4.identity(pMatrix);
         mat4.identity(mvMatrix);
-        mat4.perspective(pMatrix, zoom*3.141592/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
+        mat4.perspective(pMatrix, zoom*Math.PI/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
 
         mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
         // mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
@@ -296,6 +305,9 @@
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
 
+
+        mat4.rotate(mvMatrix, mvMatrix, angle1, [0,0,1]);
+
         //Mercure
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
 
@@ -305,11 +317,13 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
-        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.translate(mvMatrix, mvMatrix, [2, 0, 0]);
+        mat4.scale(mvMatrix, mvMatrix, [0.1, 0.1, 0.1]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        mat4.rotate(mvMatrix, mvMatrix, angle2, [0,0,1]);
 
         //Venus
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -321,10 +335,12 @@
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
         mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.scale(mvMatrix, mvMatrix, [1.5, 1.5, 1.5]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        mat4.rotate(mvMatrix, mvMatrix, angle3, [0,0,1]);
 
         //Terre
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -337,9 +353,12 @@
 
         mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
         // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
-
+        // Meme taille à l'oeil nu
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        mat4.rotate(mvMatrix, mvMatrix, angle4, [0,0,1]);
 
         //Mars
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -351,10 +370,13 @@
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
         mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        mat4.rotate(mvMatrix, mvMatrix, angle5, [0,0,1]);
 
         //Jupiter
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -365,11 +387,14 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
-        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.translate(mvMatrix, mvMatrix, [20, 0, 0]);
+        mat4.scale(mvMatrix, mvMatrix, [5, 5, 5]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        mat4.rotate(mvMatrix, mvMatrix, angle6, [0,0,1]);
 
         //Saturne
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -380,11 +405,14 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
-        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.translate(mvMatrix, mvMatrix, [4, 0, 0]);
+        mat4.scale(mvMatrix, mvMatrix, [0.8, 0.8, 0.8]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        mat4.rotate(mvMatrix, mvMatrix, angle7, [0,0,1]);
 
         //Uranus
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -395,11 +423,14 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
 
-        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
-        // mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+        mat4.translate(mvMatrix, mvMatrix, [3, 0, 0]);
+        mat4.scale(mvMatrix, mvMatrix, [0.3, 0.3, 0.3]);
 
         setMatrixUniforms(shaderProgram);
         gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        mat4.rotate(mvMatrix, mvMatrix, angle8, [0,0,1]);
 
         //Neptune
         gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -419,7 +450,15 @@
         //Gestion du temps
         gl.uniform1f(shaderProgram.timeUniform, time);
 
-        angle += 0.001;
+        angle1 += 0.010;
+        angle2 += 0.007;
+        angle3 += 0.006;
+        angle4 += 0.005;
+        angle5 += 0.004;
+        angle6 += 0.003;
+        angle7 += 0.002;
+        angle8 += 0.001;
+
         time += 0.01;
 
         setTimeout(drawScene, 1000/60);
