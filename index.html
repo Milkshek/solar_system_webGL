@@ -126,6 +126,13 @@
         }
         cubeImage.src = "sunmap.jpg";
 
+        earthTexture = gl.createTexture();
+        earthImage = new Image();
+        earthImage.onload = function() {
+            handleTextureLoaded(earthImage, earthTexture);
+        }
+        earthImage.src = "earthmap.jpg";
+
     }
 
     function handleTextureLoaded(image, texture) {
@@ -147,8 +154,9 @@
     }
 
     var cubeBuffer;
-    //var earthBuffer;
+    var earthBuffer;
     var squareTexBuffer;
+    var cube = [];
 
     function initBuffers() {
         //Cube
@@ -158,7 +166,6 @@
         var gauche = [];
         var haut = [];
         var bas = [];
-        var cube = [];
         var tex =[];
 
         for(var x=-5; x<5; x++) {
@@ -244,12 +251,14 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
 
-        /*earthBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);*/
-
         squareTexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
+
+        //Terre
+
+        earthTexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
     }
 
@@ -265,28 +274,45 @@
         mat4.identity(mvMatrix);
         mat4.perspective(pMatrix, zoom*3.141592/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
 
-        //mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
-        mat4.translate(mvMatrix, mvMatrix ,[0,0,-20]);
-        mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
-        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
+        mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
+        // mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
+        // mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
 
+        //Gestion des textures
+        gl.activeTexture(gl.TEXTURE0);
+        gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
+
+        //Soleil
+        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
+        mat4.translate(mvMatrix, mvMatrix ,[0,0,-20]);
+        //Cube de soleil
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+        //Texture du soleil
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+        //Terre
+        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
 
-        /*gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorsBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);*/
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-        
-        setMatrixUniforms(shaderProgram);
-        gl.uniform1f(shaderProgram.timeUniform, time);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
-        gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
 
-        gl.drawArrays(gl.TRIANGLES,0,3600);
+        mat4.translate(mvMatrix, mvMatrix, [6, 0, 0]);
+        mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+
+
+        //Gestion du temps
+        gl.uniform1f(shaderProgram.timeUniform, time);
 
         angle += 0.02;
         time += 0.01;
