@@ -124,7 +124,7 @@
         cubeImage.onload = function() {
             handleTextureLoaded(cubeImage, cubeTexture);
         }
-        cubeImage.src = "sunmap.jpg";
+        cubeImage.src = "img/jupiter.jpg";
 
         earthTexture = gl.createTexture();
         earthImage = new Image();
@@ -314,7 +314,7 @@
         //Gestion du temps
         gl.uniform1f(shaderProgram.timeUniform, time);
 
-        angle += 0.02;
+        angle += 0.001;
         time += 0.01;
 
         setTimeout(drawScene, 1000/60);
@@ -361,7 +361,7 @@
 
 <body onload="webGLStart();" style="text-align: center;">
 
-    <canvas id="dawin-canvas" style="border: none;" width="500" height="500"></canvas>
+    <canvas id="dawin-canvas" style="border: none;" width="800" height="800"></canvas>
 
 </body>
 
