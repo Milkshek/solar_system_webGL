@@ -124,7 +124,7 @@
         cubeImage.onload = function() {
             handleTextureLoaded(cubeImage, cubeTexture);
         }
-        cubeImage.src = "sunmap.jpg";
+        cubeImage.src = "img/jupiter.jpg";
 
     }
 
@@ -266,7 +266,7 @@
         mat4.perspective(pMatrix, zoom*3.141592/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
 
         //mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
-        mat4.translate(mvMatrix, mvMatrix ,[0,0,-20]);
+        mat4.translate(mvMatrix, mvMatrix ,[0,0,-5]);
         mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
         mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
 
@@ -288,7 +288,7 @@
 
         gl.drawArrays(gl.TRIANGLES,0,3600);
 
-        angle += 0.02;
+        angle += 0.001;
         time += 0.01;
 
         setTimeout(drawScene, 1000/60);
@@ -335,7 +335,7 @@
 
 <body onload="webGLStart();" style="text-align: center;">
 
-    <canvas id="dawin-canvas" style="border: none;" width="500" height="500"></canvas>
+    <canvas id="dawin-canvas" style="border: none;" width="800" height="800"></canvas>
 
 </body>
 
