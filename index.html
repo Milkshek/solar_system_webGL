@@ -208,15 +208,26 @@
                 ];
 
                 haut = [
-                    x+1,-5,x+1,
-                    x+1,-5,x,
-                    x,-5,x,
+                    x+1,5,y+1,
+                    x+1,5,y,
+                    x,5,y,
 
-                    x,-5,x,
-                    x+1,-5,x+1,
-                    x,-5,x+1
+                    x,5,y,
+                    x+1,5,y+1,
+                    x,5,y+1
                 ];
 
+                bas = [
+                    x+1,-5,y+1,
+                    x+1,-5,y,
+                    x,-5,y,
+
+                    x,-5,y,
+                    x+1,-5,y+1,
+                    x,-5,y+1
+                ];
+
+                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
                 tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
@@ -227,7 +238,7 @@
                 carre = carre.concat(droite);
                 carre = carre.concat(gauche);
                 carre = carre.concat(haut);
-                /*carre = carre.concat(bas);*/
+                carre = carre.concat(bas);
             }
             
         }
@@ -280,7 +291,7 @@
         gl.bindTexture(gl.TEXTURE_2D, carreTexture);
         gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
 
-        gl.drawArrays(gl.TRIANGLES,0,3000);
+        gl.drawArrays(gl.TRIANGLES,0,3600);
 
         angle += 0.02;
         time += 0.01;
