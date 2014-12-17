@@ -339,6 +339,9 @@
         mat4.identity(mvMatrix);
         mat4.perspective(pMatrix, zoom*Math.PI/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);        
 
+        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5));
+        mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5));
+
         //Gestion des textures
         gl.activeTexture(gl.TEXTURE0);
         gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
@@ -346,8 +349,7 @@
         //Soleil
         gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
         mat4.translate(mvMatrix, mvMatrix ,[0,0,-20]);
-        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
-        mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
+
 
         //Cube de soleil
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
@@ -534,9 +536,15 @@
     var x = 250;
     var y = 250;
 
+    var isMouseDown = false;
+    
+
     function mouseMove(event) {
-        x = event.clientX;
-        y = event.clientY;
+        console.log(isMouseDown);
+        if(isMouseDown) {
+            x = event.clientX;
+            y = event.clientY;
+        } 
     }
 
     function webGLStart() {
@@ -547,12 +555,17 @@
         initTextures();
 
         canvas.addEventListener("DOMMouseScroll", mouseZoom, false);
-
+        
         //Mouse rotation
         var x = 250;
         var y = 250;
 
+        canvas.onmousedown = function() { isMouseDown = true };
+        canvas.onmouseup = function() { isMouseDown = false };  
+
         canvas.onmousemove = mouseMove;
+
+        
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
