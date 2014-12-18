@@ -350,7 +350,9 @@
 
         //Soleil
         gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
+
         mat4.translate(mvMatrix, mvMatrix ,[0,0,-25]);
+        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
 
 
         //Cube de soleil
@@ -365,7 +367,8 @@
 
         mat4.rotate(mvMatrix, mvMatrix, angle, [0,1,0]);
 
-        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
+
+        
         //mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.14);
 
         //mercure
