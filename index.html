@@ -351,7 +351,7 @@
         //Soleil
         gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
 
-        mat4.translate(mvMatrix, mvMatrix ,[0,0,-25]);
+        mat4.translate(mvMatrix, mvMatrix ,[0,-2,-25]);
         mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
 
 
@@ -556,7 +556,6 @@
     
 
     function mouseMove(event) {
-        console.log(isMouseDown);
         if(isMouseDown) {
             x = event.clientX;
             y = event.clientY;

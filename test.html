@@ -5,6 +5,7 @@
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 <script type="text/javascript" src="gl-matrix-min.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css"/>
 
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec3 aVertexPosition;
@@ -30,9 +31,7 @@
 
     void main(void) {
         vec3 pos = vTex*2.0 - 1.0;
-
-        vec2 texCoord = vec2(1.0-(atan(vTex.z, vTex.x) / 3.14159 + 1.0) * 0.5,1.0-(asin(vTex.y) / 3.14159 + 0.5));
-
+        vec2 texCoord = vec2(1.0-(atan(vTex.z, vTex.x) / 3.14159 + 1.0) * 0.5,1.0-(asin(vTex.y) / 3.14159 + 0.5)); 
         float l = length(pos*2.-1.);
 
         gl_FragColor = texture2D(sampler, texCoord);
@@ -121,12 +120,75 @@
     }
 
     function initTextures() {
-        cubeTexture = gl.createTexture();
+        sunTexture = gl.createTexture();
         cubeImage = new Image();
         cubeImage.onload = function() {
-            handleTextureLoaded(cubeImage, cubeTexture);
+            handleTextureLoaded(cubeImage, sunTexture);
         }
-        cubeImage.src = "earth.jpg";
+        cubeImage.src = "img/soleil.jpg";
+
+        earthTexture = gl.createTexture();
+        earthImage = new Image();
+        earthImage.onload = function() {
+            handleTextureLoaded(earthImage, earthTexture);
+        }
+        earthImage.src = "img/terre.jpg";
+
+        luneTexture = gl.createTexture();
+        luneImage = new Image();
+        luneImage.onload = function() {
+            handleTextureLoaded(luneImage, luneTexture);
+        }
+        luneTexture.src = "img/lune.jpg";
+
+        mercureTexture = gl.createTexture();
+        merImage = new Image();
+        merImage.onload = function() {
+            handleTextureLoaded(merImage, mercureTexture);
+        }
+        merImage.src = "img/mercure.jpg";
+
+        marsTexture = gl.createTexture();
+        marImage = new Image();
+        marImage.onload = function() {
+            handleTextureLoaded(marImage, marsTexture);
+        }
+        marImage.src = "img/mars.jpg";
+
+        venusTexture = gl.createTexture();
+        venImage = new Image();
+        venImage.onload = function() {
+            handleTextureLoaded(venImage, venusTexture);
+        }
+        venImage.src = "img/venus.jpg";
+
+        jupiterTexture = gl.createTexture();
+        jupImage = new Image();
+        jupImage.onload = function() {
+            handleTextureLoaded(jupImage, jupiterTexture);
+        }
+        jupImage.src = "img/jupiter.jpg";
+
+        saturneTexture = gl.createTexture();
+        satImage = new Image();
+        satImage.onload = function() {
+            handleTextureLoaded(satImage, saturneTexture);
+        }
+        satImage.src = "img/saturne.jpg";
+
+        uranusTexture = gl.createTexture();
+        uraImage = new Image();
+        uraImage.onload = function() {
+            handleTextureLoaded(uraImage, uranusTexture);
+        }
+        uraImage.src = "img/uranus.jpg";
+
+        neptuneTexture = gl.createTexture();
+        nepImage = new Image();
+        nepImage.onload = function() {
+            handleTextureLoaded(nepImage, neptuneTexture);
+        }
+        nepImage.src = "img/neptune.png";
 
     }
 
@@ -149,8 +211,9 @@
     }
 
     var cubeBuffer;
-    //var earthBuffer;
+    var earthBuffer;
     var squareTexBuffer;
+    var cube = [];
 
     function initBuffers() {
         //Cube
@@ -160,9 +223,9 @@
         var gauche = [];
         var haut = [];
         var bas = [];
-        var cube = [];
         var tex =[];
 
+        //Construction d'un cube planétaire
         for(var x=-5; x<5; x++) {
             for(var y=-5; y<5;y++) {
                 avant = [
@@ -225,12 +288,10 @@
                     x,-5,y+1
                 ];
 
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
+                //Coordonnées de texture
+                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1);
+
+                //Coordonnées des triangles formant un cube
                 cube = cube.concat(avant);
                 cube = cube.concat(arriere);
                 cube = cube.concat(droite);
@@ -241,18 +302,34 @@
             
         }
 
-        //Soleil
+        //Planetes
         cubeBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
 
-        /*earthBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);*/
-
         squareTexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
+    }
+
+    //Fonction permettant de créer une planète et d'y appliquer une texture
+    function makePlanets(texture, translate, scale) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        if(translate != null) 
+            mat4.translate(mvMatrix, mvMatrix, translate);
+
+        if(scale != null)
+            mat4.scale(mvMatrix, mvMatrix, scale);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
     }
 
     var angle = 0;
@@ -265,34 +342,50 @@
 
         mat4.identity(pMatrix);
         mat4.identity(mvMatrix);
-        mat4.perspective(pMatrix, zoom*3.141592/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);
+        mat4.perspective(pMatrix, zoom*Math.PI/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);        
 
-        mat4.rotate(mvMatrix, mvMatrix, angle, [0,0,1]);
-        mat4.translate(mvMatrix, mvMatrix ,[0,0,-5]);
-        mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.141592);
-        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.141592);
+        mat4.translate(mvMatrix, mvMatrix ,[0,0,-25]);
+        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
 
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        /*gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorsBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,3,gl.FLOAT,false,0,0);*/
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-        
-        setMatrixUniforms(shaderProgram);
-        gl.uniform1f(shaderProgram.timeUniform, time);
+        //Gestion des textures
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
         gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
 
-        gl.drawArrays(gl.TRIANGLES,0,3600);
+        //Soleil
+        makePlanets(sunTexture, null, null);
+        
+        //Rotation des autres planètes autour du soleil
+        mat4.rotate(mvMatrix, mvMatrix, angle, [0,1,0]);
 
-        angle += 0.02;
+        //Mercure
+        makePlanets(mercureTexture, [5,0,3], [0.1,0.1,0.1]);
+
+        //Venus
+        makePlanets(venusTexture,[50,0,-20],[0.5,0.5,0.5]);
+
+        //Terre
+        makePlanets(earthTexture,[-100,0,50],[1.5,1.5,1.5]);
+
+        //Mars
+        makePlanets(marsTexture,[-20,0,-45],[1.5,1.5,1.5]);
+
+        //Jupiter
+        makePlanets(jupiterTexture,[60,0,-30],[3,3,3]);
+
+        //Saturne
+        makePlanets(saturneTexture,[-40,0,-20],[0.8,0.8,0.8]);
+        
+        //Uranus
+        makePlanets(uranusTexture,[-3,0,5],[0.3,0.3,0.3]);
+
+        //Neptune
+        makePlanets(neptuneTexture,[-10,0,-30],[2,2,2]);
+
+        //Gestion du temps
+        gl.uniform1f(shaderProgram.timeUniform, time);
+
+        angle += 0.01;
         time += 0.01;
-
         setTimeout(drawScene, 1000/60);
     }
 
@@ -302,10 +395,13 @@
 
     var x = 250;
     var y = 250;
+    var isMouseDown = false;
 
     function mouseMove(event) {
-        x = event.clientX;
-        y = event.clientY;
+        if(isMouseDown) {
+            x = event.clientX;
+            y = event.clientY;
+        } 
     }
 
     function webGLStart() {
@@ -316,29 +412,28 @@
         initTextures();
 
         canvas.addEventListener("DOMMouseScroll", mouseZoom, false);
-
+        
         //Mouse rotation
         var x = 250;
         var y = 250;
+        var z = 0;
+
+        canvas.onmousedown = function() { isMouseDown = true };
+        canvas.onmouseup = function() { isMouseDown = false };  
 
         canvas.onmousemove = mouseMove;
 
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        
+
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.enable(gl.DEPTH_TEST);
 
         drawScene();
     }
 
 </script>
-
-
 </head>
-
-
 <body onload="webGLStart();" style="text-align: center;">
-
-    <canvas id="dawin-canvas" style="border: none;" width="800" height="800"></canvas>
-
+    <canvas id="dawin-canvas" style="border: none;" width="1024" height="600"></canvas>
 </body>
-
 </html>
