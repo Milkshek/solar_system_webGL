@@ -120,10 +120,10 @@
     }
 
     function initTextures() {
-        cubeTexture = gl.createTexture();
+        sunTexture = gl.createTexture();
         cubeImage = new Image();
         cubeImage.onload = function() {
-            handleTextureLoaded(cubeImage, cubeTexture);
+            handleTextureLoaded(cubeImage, sunTexture);
         }
         cubeImage.src = "img/soleil.jpg";
 
@@ -141,52 +141,52 @@
         }
         luneTexture.src = "img/lune.jpg";
 
-        merTexture = gl.createTexture();
+        mercureTexture = gl.createTexture();
         merImage = new Image();
         merImage.onload = function() {
-            handleTextureLoaded(merImage, merTexture);
+            handleTextureLoaded(merImage, mercureTexture);
         }
         merImage.src = "img/mercure.jpg";
 
-        marTexture = gl.createTexture();
+        marsTexture = gl.createTexture();
         marImage = new Image();
         marImage.onload = function() {
-            handleTextureLoaded(marImage, marTexture);
+            handleTextureLoaded(marImage, marsTexture);
         }
         marImage.src = "img/mars.jpg";
 
-        venTexture = gl.createTexture();
+        venusTexture = gl.createTexture();
         venImage = new Image();
         venImage.onload = function() {
-            handleTextureLoaded(venImage, venTexture);
+            handleTextureLoaded(venImage, venusTexture);
         }
         venImage.src = "img/venus.jpg";
 
-        jupTexture = gl.createTexture();
+        jupiterTexture = gl.createTexture();
         jupImage = new Image();
         jupImage.onload = function() {
-            handleTextureLoaded(jupImage, jupTexture);
+            handleTextureLoaded(jupImage, jupiterTexture);
         }
         jupImage.src = "img/jupiter.jpg";
 
-        satTexture = gl.createTexture();
+        saturneTexture = gl.createTexture();
         satImage = new Image();
         satImage.onload = function() {
-            handleTextureLoaded(satImage, satTexture);
+            handleTextureLoaded(satImage, saturneTexture);
         }
         satImage.src = "img/saturne.jpg";
 
-        uraTexture = gl.createTexture();
+        uranusTexture = gl.createTexture();
         uraImage = new Image();
         uraImage.onload = function() {
-            handleTextureLoaded(uraImage, uraTexture);
+            handleTextureLoaded(uraImage, uranusTexture);
         }
         uraImage.src = "img/uranus.jpg";
 
-        nepTexture = gl.createTexture();
+        neptuneTexture = gl.createTexture();
         nepImage = new Image();
         nepImage.onload = function() {
-            handleTextureLoaded(nepImage, nepTexture);
+            handleTextureLoaded(nepImage, neptuneTexture);
         }
         nepImage.src = "img/neptune.png";
 
@@ -225,6 +225,7 @@
         var bas = [];
         var tex =[];
 
+        //Construction d'un cube planétaire
         for(var x=-5; x<5; x++) {
             for(var y=-5; y<5;y++) {
                 avant = [
@@ -287,12 +288,10 @@
                     x,-5,y+1
                 ];
 
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
-                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1);
+                //Coordonnées de texture
+                tex = tex.concat(0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1);
+
+                //Coordonnées des triangles formant un cube
                 cube = cube.concat(avant);
                 cube = cube.concat(arriere);
                 cube = cube.concat(droite);
@@ -303,7 +302,7 @@
             
         }
 
-        //Soleil
+        //Planetes
         cubeBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube), gl.STATIC_DRAW);
@@ -311,26 +310,29 @@
         squareTexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
-
-        //Terre
-
-        earthTexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
     }
 
-    
+    //Fonction permettant de créer une planète et d'y appliquer une texture
+    function makePlanets(texture, translate, scale) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
+
+        if(translate != null) 
+            mat4.translate(mvMatrix, mvMatrix, translate);
+
+        if(scale != null)
+            mat4.scale(mvMatrix, mvMatrix, scale);
+
+        setMatrixUniforms(shaderProgram);
+        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+    }
+
     var angle = 0;
-    /*
-    var angle1 = 0;
-    var angle2 = 0;
-    var angle3 = 0;
-    var angle4 = 0;
-    var angle5 = 0;
-    var angle6 = 0;
-    var angle7 = 0;
-    var angle8 = 0;
-    */
     var time = 0;
     var zoom = 45;
 
@@ -342,206 +344,48 @@
         mat4.identity(mvMatrix);
         mat4.perspective(pMatrix, zoom*Math.PI/180, gl.viewportWidth/gl.viewportHeight, 0.1,100);        
 
-        
+        mat4.translate(mvMatrix, mvMatrix ,[0,0,-25]);
+        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
 
         //Gestion des textures
         gl.activeTexture(gl.TEXTURE0);
         gl.uniform1i(gl.getUniformLocation(shaderProgram, "sampler"), 0);
 
         //Soleil
-        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
-
-        mat4.translate(mvMatrix, mvMatrix ,[0,-2,-25]);
-        mat4.rotateY(mvMatrix, mvMatrix, (x/500-0.5)*3.14);
-
-
-        //Cube de soleil
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-        //Texture du soleil
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
+        makePlanets(sunTexture, null, null);
+        
+        //Rotation des autres planètes autour du soleil
         mat4.rotate(mvMatrix, mvMatrix, angle, [0,1,0]);
 
-
-        
-        //mat4.rotateX(mvMatrix, mvMatrix, (y/500-0.5)*3.14);
-
-        //mercure
-        gl.bindTexture(gl.TEXTURE_2D, merTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [5, 0, 3]);
-        mat4.scale(mvMatrix, mvMatrix, [0.1, 0.1, 0.1]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+        //Mercure
+        makePlanets(mercureTexture, [5,0,3], [0.1,0.1,0.1]);
 
         //Venus
-        gl.bindTexture(gl.TEXTURE_2D, venTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [50, 0, -20]);
-        mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
-
-
+        makePlanets(venusTexture,[50,0,-20],[0.5,0.5,0.5]);
 
         //Terre
-        gl.bindTexture(gl.TEXTURE_2D, earthTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [-100, 0, 50]);
-        mat4.scale(mvMatrix, mvMatrix, [1.5, 1.5, 1.5]);
-        // Meme taille à l'oeil nu
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
-
-/*
-
-        //LUNE
-        gl.bindTexture(gl.TEXTURE_2D, luneTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        //mat4.translate(mvMatrix, mvMatrix, [Math.cos(angle1), Math.sin(angle8)-2, 2]);
-        mat4.scale(mvMatrix, mvMatrix, [0.8, 0.8, 0.8]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-*/
-
+        makePlanets(earthTexture,[-100,0,50],[1.5,1.5,1.5]);
 
         //Mars
-        gl.bindTexture(gl.TEXTURE_2D, marTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [-20, 0, -45]);
-        mat4.scale(mvMatrix, mvMatrix, [1.5, 1.5, 1.5]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
-
-
+        makePlanets(marsTexture,[-20,0,-45],[1.5,1.5,1.5]);
 
         //Jupiter
-        gl.bindTexture(gl.TEXTURE_2D, jupTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [60, 0, -30]);
-        mat4.scale(mvMatrix, mvMatrix, [3, 3, 3]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
-
-
+        makePlanets(jupiterTexture,[60,0,-30],[3,3,3]);
 
         //Saturne
-        gl.bindTexture(gl.TEXTURE_2D, satTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [-40, 0, -20]);
-        mat4.scale(mvMatrix, mvMatrix, [0.8, 0.8, 0.8]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-
-
+        makePlanets(saturneTexture,[-40,0,-20],[0.8,0.8,0.8]);
         
         //Uranus
-        gl.bindTexture(gl.TEXTURE_2D, uraTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [-3, 0, 5]);
-        mat4.scale(mvMatrix, mvMatrix, [0.3, 0.3, 0.3]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
-        
-
-
+        makePlanets(uranusTexture,[-3,0,5],[0.3,0.3,0.3]);
 
         //Neptune
-        gl.bindTexture(gl.TEXTURE_2D, nepTexture);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,3,gl.FLOAT,false,0,0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, earthTexBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTexAttribute,2,gl.FLOAT,false,0,0);
-
-        mat4.translate(mvMatrix, mvMatrix, [-10, 0, -30]);
-        mat4.scale(mvMatrix, mvMatrix, [2, 2, 2]);
-
-        setMatrixUniforms(shaderProgram);
-        gl.drawArrays(gl.TRIANGLES,0,(cube.length-1)/3);
+        makePlanets(neptuneTexture,[-10,0,-30],[2,2,2]);
 
         //Gestion du temps
         gl.uniform1f(shaderProgram.timeUniform, time);
 
         angle += 0.01;
-        /*
-        angle1 += 0.01;
-        angle2 += 0.01;
-        angle3 += 0.01;
-        angle4 += 0.01;
-        angle5 += 0.01;
-        angle6 += 0.01;
-        angle7 += 0.01;
-        angle8 += 0.01;
-        */
-
         time += 0.01;
-
         setTimeout(drawScene, 1000/60);
     }
 
@@ -551,9 +395,7 @@
 
     var x = 250;
     var y = 250;
-
     var isMouseDown = false;
-    
 
     function mouseMove(event) {
         if(isMouseDown) {
@@ -590,15 +432,8 @@
     }
 
 </script>
-
-
 </head>
-
-
 <body onload="webGLStart();" style="text-align: center;">
-
     <canvas id="dawin-canvas" style="border: none;" width="1024" height="600"></canvas>
-
 </body>
-
 </html>
